@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class TokenCache {
 
 	private static Logger logger = LoggerFactory.getLogger(TokenCache.class);
+	public static final String TOKEN = "token_";
 
 	//LRU算法
 	private static LoadingCache<String,String> localCache = CacheBuilder.newBuilder()
@@ -30,11 +31,11 @@ public class TokenCache {
 				}
 			});
 
-	public static void setKey(String key, String value) {
+	public static void setToken(String key, String value) {
 		localCache.put(key,value);
 	}
 
-	public static String getKey(String key) {
+	public static String getToken(String key) {
 		String value = null;
 		try {
 			value = localCache.get(key);

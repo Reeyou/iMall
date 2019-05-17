@@ -5,10 +5,7 @@ import com.reeyou.imall.common.ServerResponse;
 import com.reeyou.imall.pojo.User;
 import com.reeyou.imall.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -31,7 +28,7 @@ public class UserContorller {
 	 * @param session
 	 * @return
 	 */
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@PostMapping(value = "/login")
 	@ResponseBody
 	public ServerResponse<User> login(String username, String password, HttpSession session) {
 
@@ -44,33 +41,40 @@ public class UserContorller {
 		return response;
 	}
 
-	@RequestMapping(value = "/loginOut", method = RequestMethod.GET)
+	@GetMapping(value = "/loginOut")
 	@ResponseBody
 	public ServerResponse<String> loginOut(HttpSession session) {
 		session.removeAttribute(Constant.CURRENT_USER);
 		return ServerResponse.serverSuccuss();
 	}
 
-	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	@PostMapping(value = "/register")
 	@ResponseBody
 	public ServerResponse<String> register(User user) {
 		return UserService.register(user);
 	}
 
-	@RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
+
+	@GetMapping(value = "/forgetPwd")
 	@ResponseBody
-	public ServerResponse<User> getUserInfo(HttpSession session) {
-		User user = (User)session.getAttribute(Constant.CURRENT_USER);
-		if(user != null) {
-			return ServerResponse.serverSuccuss(user);
-		}
-		return ServerResponse.serverErrorMsg("用户未登录，无法获取用户信息！");
+	public ServerResponse<String> forgetPwd(String username, String email, String newPassword) {
+		return UserService.forgetResetPwd(username, email, newPassword);
 	}
 
-	@RequestMapping(value = "/resetPwd", method = RequestMethod.GET)
+	@GetMapping(value = "/resetPwd")
 	@ResponseBody
-	public ServerResponse<String> resetPwd(String username) {
-		return UserService.resetPwd(username);
+	public ServerResponse<String> resetPwd(String username, String password, String newPassword, String userToken) {
+		return UserService.resetPwd(username, password, newPassword, userToken);
 	}
+
+//	@GetMapping(value = "/getUserInfo")
+//	@ResponseBody
+//	public ServerResponse<User> getUserInfo(HttpSession session) {
+//		User user = (User)session.getAttribute(Constant.CURRENT_USER);
+//		if(user != null) {
+//			return ServerResponse.serverSuccuss(user);
+//		}
+//		return ServerResponse.serverErrorMsg("用户未登录，无法获取用户信息！");
+//	}
 
 }

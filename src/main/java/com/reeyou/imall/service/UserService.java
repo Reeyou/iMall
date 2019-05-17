@@ -15,5 +15,7 @@ public interface UserService {
 
 	ServerResponse<String> checkValid(String str, String type);
 
-	ServerResponse<String> resetPwd(String username);
+	ServerResponse<String> forgetResetPwd(String username, String email, String newPassword);
+
+	ServerResponse<String> resetPwd(String username, String password, String newPassword, String userToken);
 }

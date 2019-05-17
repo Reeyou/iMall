@@ -33,19 +33,21 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public ServerResponse<User> login(String username, String password) {
 
-//		int resultCount = userMapper.checkUsername(userName);
-//		if(resultCount == 0) {
-//			return ServerResponse.serverErrorMsg("用户名不存在！");
-//		}
-//		todo 密码登录MD5
+		int resultCount = userMapper.checkUsername(username);
+		if(resultCount == 0) {
+			return ServerResponse.serverErrorMsg("用户名不存在！");
+		}
+
 		String md5Password = MD5Util.MD5EncodeUtf8(password);
 
-		User user = userMapper.selectLogin(username, md5Password);
+		User user = userMapper.matchUser(username, md5Password);
 		if(user == null) {
 			return ServerResponse.serverErrorMsg("密码错误！");
 		}
 
 		user.setPassword(StringUtils.EMPTY);
+		String userToken = UUID.randomUUID().toString();
+		TokenCache.setToken(TokenCache.TOKEN+username,userToken);
 		return ServerResponse.serverSuccuss("登录成功",user);
 	}
 
@@ -102,20 +104,70 @@ public class UserServiceImpl implements UserService {
 		return ServerResponse.serverSuccussMsg("校验成功");
 	}
 
-	public ServerResponse<String> resetPwd(String username) {
-		ServerResponse validResponse = this.checkValid(username, Constant.USERNAME);
-		if(validResponse.isSuccuss()) {
+	/**
+	 * 重置密码
+	 * @param username
+	 * @param password
+	 * @param newPassword
+	 * @param userToken
+	 * @return
+	 */
+	public ServerResponse<String> resetPwd(String username, String password, String newPassword, String userToken) {
+		if(StringUtils.isBlank(userToken)) {
+			return ServerResponse.serverErrorMsg("参数错误，缺少Token!");
+		}
+		ServerResponse validUsername = this.checkValid(username, Constant.USERNAME);
+		if(validUsername.isSuccuss()) {
 			return ServerResponse.serverErrorMsg("用户不存在！");
 		}
-		String question = userMapper.selectQuestionByUsername(username);
-		if(StringUtils.isNoneBlank(question)) {
-			return ServerResponse.serverSuccuss(question);
+		int resultCount = userMapper.checkPassword(password);
+		if(resultCount == 0) {
+			return ServerResponse.serverErrorMsg("原密码错误！");
 		}
-		return ServerResponse.serverErrorMsg("找回密码问题错误");
+
+		String token = TokenCache.getToken(TokenCache.TOKEN+username);
+		if(StringUtils.isBlank(token)) {
+			return ServerResponse.serverErrorMsg("Token无效或过期！");
+		}
+
+		if(StringUtils.equals(token, userToken)) {
+			String md5Password = MD5Util.MD5EncodeUtf8(newPassword);
+			resultCount = userMapper.updatePwdByUsername(username, md5Password);
+			if(resultCount > 0) {
+				return ServerResponse.serverSuccussMsg("更新密码成功！");
+			}
+		} else {
+			return ServerResponse.serverErrorMsg("Token错误！请重新获取Token");
+		}
+		return ServerResponse.serverErrorMsg("更新密码失败！");
 	}
 
-//	public ServerResponse<String> checkPwd(String password) {
-//		String token = UUID.randomUUID().toString();
-//		TokenCache.setKey("token_", token);
-//	}
+	/**
+	 * 忘记密码
+	 * @param username
+	 * @param email
+	 * @param newPassword
+	 * @return
+	 */
+	public ServerResponse<String> forgetResetPwd(String username, String email, String newPassword) {
+		int resultCount = userMapper.checkUsername(username);
+		if(resultCount == 0) {
+			return ServerResponse.serverErrorMsg("用户不存在!");
+		}
+		resultCount = userMapper.checkEmail(email);
+		if(resultCount == 0) {
+			return ServerResponse.serverErrorMsg("邮箱不存在！");
+		}
+		resultCount = userMapper.checkEmailByUsername(email, username);
+		if(resultCount == 0) {
+			return ServerResponse.serverErrorMsg("邮箱不匹配！");
+		}
+
+		String md5Password = MD5Util.MD5EncodeUtf8(newPassword);
+		int updateCount = userMapper.updatePwdByUsername(username, md5Password);
+		if(updateCount > 0) {
+			return ServerResponse.serverSuccussMsg("密码修改成功！");
+		}
+		return ServerResponse.serverErrorMsg("密码修改失败！");
+	}
 }
