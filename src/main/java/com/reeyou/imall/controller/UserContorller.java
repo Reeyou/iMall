@@ -86,7 +86,7 @@ public class UserContorller {
 			return ServerResponse.serverErrorCodeMsg(ResponseEnums.UNLOGIN.getCode(), "当前用户未登录！");
 		}
 		user.setId(currentUser.getId());
-		user.setUsername(currentUser.getUsername());
+//		user.setUsername(currentUser.getUsername());
 
 		ServerResponse<User> response = UserService.updateUserInfo(user);
 		if(response.isSuccuss()) {

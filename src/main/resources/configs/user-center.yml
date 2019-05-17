@@ -1,0 +1,5 @@
+mybatis:
+  type-aliases-package: com.cloud.model.user
+  mapper-locations: classpath:/mybatis-mappers/*
+  configuration:
+    mapUnderscoreToCamelCase: true

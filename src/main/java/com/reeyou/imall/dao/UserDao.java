@@ -4,7 +4,8 @@ import com.reeyou.imall.pojo.User;
 import org.apache.ibatis.annotations.*;
 
 @Mapper
-public interface UserMapper {
+public interface UserDao {
+	@Delete("delete from mmall_user where id = #{id}")
     int deleteByPrimaryKey(Integer id);
 
     @Insert("insert into mmall_user (id, username, password, email, phone, question, answer, role, create_time, update_time)"
@@ -18,6 +19,7 @@ public interface UserMapper {
 
     int updateByPrimaryKeySelective(User record);
 
+    @Update("update mmall_user set username = #{username}, password = #{password}, email = #{email}, phone = #{phone}, role = #{role}, create_time = #{createTime}, update_time = now() where id = #{id}")
     int updateByPrimaryKey(User record);
 
     @Select("select count(1) from mmall_user where username = #{username}")
