@@ -2,13 +2,17 @@ package com.reeyou.imall.service.Impl;
 
 import com.reeyou.imall.common.Constant;
 import com.reeyou.imall.common.ServerResponse;
+import com.reeyou.imall.common.TokenCache;
 import com.reeyou.imall.dao.UserMapper;
 import com.reeyou.imall.pojo.User;
 import com.reeyou.imall.service.UserService;
 import com.reeyou.imall.utils.MD5Util;
+import jdk.nashorn.internal.parser.Token;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 /**
  * @author Reeyou
@@ -22,21 +26,21 @@ public class UserServiceImpl implements UserService {
 
 	/**
 	 * 登录
-	 * @param userName
+	 * @param username
 	 * @param password
 	 * @return
 	 */
 	@Override
-	public ServerResponse<User> login(String userName, String password) {
+	public ServerResponse<User> login(String username, String password) {
 
-		int resultCount = userMapper.checkUserName(userName);
-		if(resultCount == 0) {
-			return ServerResponse.serverErrorMsg("用户名不存在！");
-		}
+//		int resultCount = userMapper.checkUsername(userName);
+//		if(resultCount == 0) {
+//			return ServerResponse.serverErrorMsg("用户名不存在！");
+//		}
 //		todo 密码登录MD5
 		String md5Password = MD5Util.MD5EncodeUtf8(password);
 
-		User user = userMapper.selectLogin(userName, md5Password);
+		User user = userMapper.selectLogin(username, md5Password);
 		if(user == null) {
 			return ServerResponse.serverErrorMsg("密码错误！");
 		}
@@ -51,10 +55,7 @@ public class UserServiceImpl implements UserService {
 	 * @return
 	 */
 	public ServerResponse<String> register(User user) {
-//		int resultCount = userMapper.checkUserName(user.getUsername());
-//		if(resultCount > 0) {
-//			return ServerResponse.serverErrorMsg("用户名已存在！");
-//		}
+
 		ServerResponse validResponse = this.checkValid(user.getUsername(), Constant.USERNAME);
 		if(!validResponse.isSuccuss()) {
 			return validResponse;
@@ -84,7 +85,7 @@ public class UserServiceImpl implements UserService {
 	public ServerResponse<String> checkValid(String str, String type) {
 		if(StringUtils.isNoneBlank(type)) {
 			if(Constant.USERNAME.equals(type)) {
-				int resultCount = userMapper.checkUserName(str);
+				int resultCount = userMapper.checkUsername(str);
 				if(resultCount > 0) {
 					return ServerResponse.serverErrorMsg("用户名已存在！");
 				}
@@ -101,10 +102,20 @@ public class UserServiceImpl implements UserService {
 		return ServerResponse.serverSuccussMsg("校验成功");
 	}
 
-//	public ServerResponse<String> resetPwd(String userName) {
-//		ServerResponse validResponse = this.checkValid(userName);
-//		if(validResponse.isSuccuss()) {
-////			return
-//		}
+	public ServerResponse<String> resetPwd(String username) {
+		ServerResponse validResponse = this.checkValid(username, Constant.USERNAME);
+		if(validResponse.isSuccuss()) {
+			return ServerResponse.serverErrorMsg("用户不存在！");
+		}
+		String question = userMapper.selectQuestionByUsername(username);
+		if(StringUtils.isNoneBlank(question)) {
+			return ServerResponse.serverSuccuss(question);
+		}
+		return ServerResponse.serverErrorMsg("找回密码问题错误");
+	}
+
+//	public ServerResponse<String> checkPwd(String password) {
+//		String token = UUID.randomUUID().toString();
+//		TokenCache.setKey("token_", token);
 //	}
 }

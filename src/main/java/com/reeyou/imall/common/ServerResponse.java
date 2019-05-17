@@ -34,7 +34,6 @@ public class ServerResponse<T> implements Serializable {
 		this.data = data;
 	}
 
-	//	公共方法
 	//使之不在序列化对象结果当中，因为is开头会被定义为常量
 	@JsonIgnore
 	public boolean isSuccuss() {
@@ -52,6 +51,7 @@ public class ServerResponse<T> implements Serializable {
 	public T getData() {
 		return data;
 	}
+
 	//	请求成功
 	public static <T> ServerResponse<T> serverSuccuss() {
 		return new ServerResponse<T>(ResponseEnums.SUCCUSS.getCode());

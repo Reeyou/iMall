@@ -26,18 +26,18 @@ public class UserContorller {
 
 	/**
 	 * 用户登录
-	 * @param userName
+	 * @param username
 	 * @param password
 	 * @param session
 	 * @return
 	 */
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
-	public ServerResponse<User> login(String userName, String password, HttpSession session) {
+	public ServerResponse<User> login(String username, String password, HttpSession session) {
 
 		//	service => mybatis => dao
 
-		ServerResponse<User> response = UserService.login(userName, password);
+		ServerResponse<User> response = UserService.login(username, password);
 		if(response.isSuccuss()) {
 			session.setAttribute(Constant.CURRENT_USER, response.getData());
 		}
@@ -49,19 +49,12 @@ public class UserContorller {
 	public ServerResponse<String> loginOut(HttpSession session) {
 		session.removeAttribute(Constant.CURRENT_USER);
 		return ServerResponse.serverSuccuss();
-
 	}
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	@ResponseBody
 	public ServerResponse<String> register(User user) {
 		return UserService.register(user);
-	}
-
-	@RequestMapping(value = "/checkValid", method = RequestMethod.POST)
-	@ResponseBody
-	public ServerResponse<String> checkValid(String str, String type) {
-		return UserService.checkValid(str, type);
 	}
 
 	@RequestMapping(value = "/getUserInfo", method = RequestMethod.GET)
@@ -74,10 +67,10 @@ public class UserContorller {
 		return ServerResponse.serverErrorMsg("用户未登录，无法获取用户信息！");
 	}
 
-//	@RequestMapping(value = "/resetPwd", method = RequestMethod.POST)
-//	@ResponseBody
-//	public ServerResponse<String> resetPwd(String userName) {
-//
-//	}
+	@RequestMapping(value = "/resetPwd", method = RequestMethod.GET)
+	@ResponseBody
+	public ServerResponse<String> resetPwd(String username) {
+		return UserService.resetPwd(username);
+	}
 
 }
