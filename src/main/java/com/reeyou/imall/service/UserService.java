@@ -18,4 +18,8 @@ public interface UserService {
 	ServerResponse<String> forgetResetPwd(String username, String email, String newPassword);
 
 	ServerResponse<String> resetPwd(String username, String password, String newPassword, String userToken);
+
+	ServerResponse<User> getUserInfo(Integer userId);
+
+	ServerResponse<User> updateUserInfo(User user);
 }

@@ -13,6 +13,7 @@ public interface UserMapper {
 
     int insertSelective(User record);
 
+    @Select("select * from mmall_user where id = #{id}")
     User selectByPrimaryKey(Integer id);
 
     int updateByPrimaryKeySelective(User record);

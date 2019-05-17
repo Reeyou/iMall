@@ -7,7 +7,6 @@ import com.reeyou.imall.dao.UserMapper;
 import com.reeyou.imall.pojo.User;
 import com.reeyou.imall.service.UserService;
 import com.reeyou.imall.utils.MD5Util;
-import jdk.nashorn.internal.parser.Token;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +46,7 @@ public class UserServiceImpl implements UserService {
 
 		user.setPassword(StringUtils.EMPTY);
 		String userToken = UUID.randomUUID().toString();
+		System.out.println("token:" + userToken);
 		TokenCache.setToken(TokenCache.TOKEN+username,userToken);
 		return ServerResponse.serverSuccuss("登录成功",user);
 	}
@@ -104,6 +104,35 @@ public class UserServiceImpl implements UserService {
 		return ServerResponse.serverSuccussMsg("校验成功");
 	}
 
+
+	/**
+	 * 忘记密码
+	 * @param username
+	 * @param email
+	 * @param newPassword
+	 * @return
+	 */
+	public ServerResponse<String> forgetResetPwd(String username, String email, String newPassword) {
+		int resultCount = userMapper.checkUsername(username);
+		if(resultCount == 0) {
+			return ServerResponse.serverErrorMsg("用户不存在!");
+		}
+		resultCount = userMapper.checkEmail(email);
+		if(resultCount == 0) {
+			return ServerResponse.serverErrorMsg("邮箱不存在！");
+		}
+		resultCount = userMapper.checkEmailByUsername(email, username);
+		if(resultCount == 0) {
+			return ServerResponse.serverErrorMsg("邮箱不匹配！");
+		}
+
+		String md5Password = MD5Util.MD5EncodeUtf8(newPassword);
+		int updateCount = userMapper.updatePwdByUsername(username, md5Password);
+		if(updateCount > 0) {
+			return ServerResponse.serverSuccussMsg("密码修改成功！");
+		}
+		return ServerResponse.serverErrorMsg("密码修改失败！");
+	}
 	/**
 	 * 重置密码
 	 * @param username
@@ -143,31 +172,45 @@ public class UserServiceImpl implements UserService {
 	}
 
 	/**
-	 * 忘记密码
-	 * @param username
-	 * @param email
-	 * @param newPassword
+	 * 获取个人信息
+	 * @param userId
 	 * @return
 	 */
-	public ServerResponse<String> forgetResetPwd(String username, String email, String newPassword) {
-		int resultCount = userMapper.checkUsername(username);
-		if(resultCount == 0) {
-			return ServerResponse.serverErrorMsg("用户不存在!");
+	public ServerResponse<User> getUserInfo(Integer userId) {
+		User user = userMapper.selectByPrimaryKey(userId);
+		if(user == null) {
+			return ServerResponse.serverErrorMsg("找不到当前用户！");
 		}
-		resultCount = userMapper.checkEmail(email);
-		if(resultCount == 0) {
-			return ServerResponse.serverErrorMsg("邮箱不存在！");
-		}
-		resultCount = userMapper.checkEmailByUsername(email, username);
-		if(resultCount == 0) {
-			return ServerResponse.serverErrorMsg("邮箱不匹配！");
+		user.setPassword(StringUtils.EMPTY);
+		return ServerResponse.serverSuccuss(user);
+	}
+
+	/**
+	 * 更新个人信息
+	 * @param user
+	 * @return
+	 */
+	public ServerResponse<User> updateUserInfo(User user) {
+		int resultCount = userMapper.checkEmailByUsername(user.getEmail(), user.getUsername());
+		if(resultCount > 0) {
+			return ServerResponse.serverErrorMsg("email地址已存在！");
 		}
 
-		String md5Password = MD5Util.MD5EncodeUtf8(newPassword);
-		int updateCount = userMapper.updatePwdByUsername(username, md5Password);
-		if(updateCount > 0) {
-			return ServerResponse.serverSuccussMsg("密码修改成功！");
+		resultCount = userMapper.checkUsername(user.getUsername());
+		if(resultCount > 0) {
+			return ServerResponse.serverErrorMsg("用户名已存在!");
 		}
-		return ServerResponse.serverErrorMsg("密码修改失败！");
+		User updateUser = new User();
+		updateUser.setUsername(user.getUsername());
+		updateUser.setId(user.getId());
+		updateUser.setEmail(user.getEmail());
+		updateUser.setPhone(user.getPhone());
+
+		int updateCount = userMapper.updateByPrimaryKeySelective(updateUser);
+		if(updateCount > 0) {
+			return ServerResponse.serverSuccussMsg("个人信息更改成功！");
+		}
+		return ServerResponse.serverErrorMsg("个人信息更改失败！");
 	}
+
 }
