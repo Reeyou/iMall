@@ -31,8 +31,8 @@ public interface UserDao {
     @Select("select count(1) from mmall_user where email = #{email} and username = #{username}")
 	int checkEmailByUsername(@Param("email") String email, @Param("username") String username);
 
-    @Select("select * from mmall_user where password = #{password}")
-    int checkPassword(String password);
+    @Select("select count(1) from mmall_user where password = #{password} and username = #{username}")
+    int checkPasswordByUsername(@Param("password") String password, @Param("username")String username);
 
     @Update("update mmall_user SET password = #{newPassword},update_time = now() WHERE username = #{username}")
     int updatePwdByUsername(@Param("username") String username, @Param("newPassword") String newPassword);

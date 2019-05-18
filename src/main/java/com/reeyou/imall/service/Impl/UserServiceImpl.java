@@ -7,10 +7,12 @@ import com.reeyou.imall.dao.UserDao;
 import com.reeyou.imall.pojo.User;
 import com.reeyou.imall.service.UserService;
 import com.reeyou.imall.utils.MD5Util;
+import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
 /**
@@ -135,40 +137,30 @@ public class UserServiceImpl implements UserService {
 	}
 	/**
 	 * 重置密码
-	 * @param username
 	 * @param password
 	 * @param newPassword
-	 * @param userToken
+	 * @param session
 	 * @return
 	 */
-	public ServerResponse<String> resetPwd(String username, String password, String newPassword, String userToken) {
-		if(StringUtils.isBlank(userToken)) {
-			return ServerResponse.serverErrorMsg("参数错误，缺少Token!");
-		}
-		ServerResponse validUsername = this.checkValid(username, Constant.USERNAME);
-		if(validUsername.isSuccuss()) {
-			return ServerResponse.serverErrorMsg("用户不存在！");
-		}
-		int resultCount = userDao.checkPassword(password);
+	public ServerResponse<String> resetPwd(String password, String newPassword, HttpSession session) {
+		User user = (User)session.getAttribute(Constant.CURRENT_USER);
+
+		String md5Password = MD5Util.MD5EncodeUtf8(password);
+		String md5NewPassword = MD5Util.MD5EncodeUtf8(newPassword);
+		int resultCount = userDao.checkPasswordByUsername(md5Password, user.getUsername());
 		if(resultCount == 0) {
 			return ServerResponse.serverErrorMsg("原密码错误！");
 		}
 
-		String token = TokenCache.getToken(TokenCache.TOKEN+username);
-		if(StringUtils.isBlank(token)) {
-			return ServerResponse.serverErrorMsg("Token无效或过期！");
-		}
-
-		if(StringUtils.equals(token, userToken)) {
-			String md5Password = MD5Util.MD5EncodeUtf8(newPassword);
-			resultCount = userDao.updatePwdByUsername(username, md5Password);
+		if(user != null) {
+			resultCount = userDao.updatePwdByUsername(user.getUsername(), md5NewPassword);
 			if(resultCount > 0) {
-				return ServerResponse.serverSuccussMsg("更新密码成功！");
+				return ServerResponse.serverSuccussMsg("修改密码成功！");
 			}
 		} else {
-			return ServerResponse.serverErrorMsg("Token错误！请重新获取Token");
+			return ServerResponse.serverErrorMsg("当前用户未登录");
 		}
-		return ServerResponse.serverErrorMsg("更新密码失败！");
+		return ServerResponse.serverErrorMsg("修改密码失败！");
 	}
 
 	/**
@@ -196,15 +188,17 @@ public class UserServiceImpl implements UserService {
 			return ServerResponse.serverErrorMsg("email地址已存在！");
 		}
 
-//		resultCount = userDao.checkUsername(user.getUsername());
-//		if(resultCount > 0) {
-//			return ServerResponse.serverErrorMsg("用户名已存在!");
-//		}
+		resultCount = userDao.checkUsername(user.getUsername());
+		if(resultCount > 0) {
+			return ServerResponse.serverErrorMsg("用户名已存在!");
+		}
 		User updateUser = new User();
+		updateUser.setId(user.getId());
+//		System.out.println("userId:" + updateUser.getId());
 		updateUser.setUsername(user.getUsername());
-//		updateUser.setId(user.getId());
+//		System.out.println("updateUsername:" + updateUser.getUsername());
 		updateUser.setEmail(user.getEmail());
-//		updateUser.setPhone(user.getPhone());
+		updateUser.setPhone(user.getPhone());
 
 //		todo 是不是无法根据id更新userInfo
 		int updateCount = userDao.updateByPrimaryKeySelective(updateUser);

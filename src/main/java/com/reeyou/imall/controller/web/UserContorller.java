@@ -1,4 +1,4 @@
-package com.reeyou.imall.controller;
+package com.reeyou.imall.controller.web;
 
 import com.reeyou.imall.common.Constant;
 import com.reeyou.imall.common.ResponseEnums;
@@ -38,6 +38,7 @@ public class UserContorller {
 		ServerResponse<User> response = UserService.login(username, password);
 		if(response.isSuccuss()) {
 			session.setAttribute(Constant.CURRENT_USER, response.getData());
+			System.out.println("session:" + session.getAttribute(Constant.CURRENT_USER));
 		}
 		return response;
 	}
@@ -64,8 +65,8 @@ public class UserContorller {
 
 	@GetMapping(value = "/resetPwd")
 	@ResponseBody
-	public ServerResponse<String> resetPwd(String username, String password, String newPassword, String userToken) {
-		return UserService.resetPwd(username, password, newPassword, userToken);
+	public ServerResponse<String> resetPwd(String password, String newPassword, HttpSession session) {
+		return UserService.resetPwd(password, newPassword, session);
 	}
 
 	@GetMapping(value = "/getUserInfo")
@@ -85,12 +86,13 @@ public class UserContorller {
 		if(currentUser == null) {
 			return ServerResponse.serverErrorCodeMsg(ResponseEnums.UNLOGIN.getCode(), "当前用户未登录！");
 		}
+		System.out.println("currentId:" + currentUser.getId());
 		user.setId(currentUser.getId());
 //		user.setUsername(currentUser.getUsername());
 
 		ServerResponse<User> response = UserService.updateUserInfo(user);
 		if(response.isSuccuss()) {
-			response.getData().setUsername(currentUser.getUsername());
+//			response.getData().setUsername(currentUser.getUsername());
 			session.setAttribute(Constant.CURRENT_USER, response.getData());
 		}
 		return response;
