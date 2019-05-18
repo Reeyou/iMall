@@ -1,6 +1,7 @@
 package com.reeyou.imall.controller.admin;
 
 import com.reeyou.imall.common.Constant;
+import com.reeyou.imall.common.ResponseEnums;
 import com.reeyou.imall.common.ServerResponse;
 import com.reeyou.imall.dao.UserDao;
 import com.reeyou.imall.pojo.User;
@@ -8,10 +9,7 @@ import com.reeyou.imall.service.UserService;
 import com.reeyou.imall.utils.MD5Util;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -45,6 +43,16 @@ public class UserAdminController {
 			}
 		}
 		return response;
+	}
+	@GetMapping(value = "/getUserInfo")
+	@ResponseBody
+	public ServerResponse<User> adminGetUserInfo(HttpSession session) {
+		User user = (User)session.getAttribute(Constant.CURRENT_USER);
+
+		if(user == null) {
+			return ServerResponse.serverErrorCodeMsg(ResponseEnums.UNLOGIN.getCode(), "当前用户未登录！");
+		}
+		return userService.getUserInfo(user.getId());
 	}
 
 	@PostMapping(value = "/resetPwd")
