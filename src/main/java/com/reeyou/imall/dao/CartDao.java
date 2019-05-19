@@ -2,7 +2,7 @@ package com.reeyou.imall.dao;
 
 import com.reeyou.imall.pojo.Cart;
 
-public interface CartMapper {
+public interface CartDao {
     int deleteByPrimaryKey(Integer id);
 
     int insert(Cart record);

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
  * @data 2019/5/18 10:15
  */
 @RestController
-@RequestMapping(value="/admin")
+@RequestMapping("/admin/")
 public class UserAdminController {
 
 	@Autowired

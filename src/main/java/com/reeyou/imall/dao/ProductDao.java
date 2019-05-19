@@ -2,7 +2,7 @@ package com.reeyou.imall.dao;
 
 import com.reeyou.imall.pojo.Product;
 
-public interface ProductMapper {
+public interface ProductDao {
     int deleteByPrimaryKey(Integer id);
 
     int insert(Product record);

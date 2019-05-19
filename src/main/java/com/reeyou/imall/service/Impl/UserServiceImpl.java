@@ -7,7 +7,6 @@ import com.reeyou.imall.dao.UserDao;
 import com.reeyou.imall.pojo.User;
 import com.reeyou.imall.service.UserService;
 import com.reeyou.imall.utils.MD5Util;
-import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,6 +57,7 @@ public class UserServiceImpl implements UserService {
 	 * @param user
 	 * @return
 	 */
+	@Override
 	public ServerResponse<String> register(User user) {
 
 		ServerResponse validResponse = this.checkValid(user.getUsername(), Constant.USERNAME);
@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
 	 * @param type
 	 * @return
 	 */
+	@Override
 	public ServerResponse<String> checkValid(String str, String type) {
 		if(StringUtils.isNoneBlank(type)) {
 			if(Constant.USERNAME.equals(type)) {
@@ -114,6 +115,7 @@ public class UserServiceImpl implements UserService {
 	 * @param newPassword
 	 * @return
 	 */
+	@Override
 	public ServerResponse<String> forgetResetPwd(String username, String email, String newPassword) {
 		int resultCount = userDao.checkUsername(username);
 		if(resultCount == 0) {
@@ -142,6 +144,7 @@ public class UserServiceImpl implements UserService {
 	 * @param session
 	 * @return
 	 */
+	@Override
 	public ServerResponse<String> resetPwd(String password, String newPassword, HttpSession session) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 
@@ -168,6 +171,7 @@ public class UserServiceImpl implements UserService {
 	 * @param userId
 	 * @return
 	 */
+	@Override
 	public ServerResponse<User> getUserInfo(Integer userId) {
 		User user = userDao.selectByPrimaryKey(userId);
 		if(user == null) {
@@ -182,6 +186,7 @@ public class UserServiceImpl implements UserService {
 	 * @param user
 	 * @return
 	 */
+	@Override
 	public ServerResponse<User> updateUserInfo(User user) {
 		int resultCount = userDao.checkEmailByUsername(user.getEmail(), user.getUsername());
 		if(resultCount > 0) {
@@ -208,5 +213,19 @@ public class UserServiceImpl implements UserService {
 		}
 		return ServerResponse.serverErrorMsg("个人信息更改失败！");
 	}
+
+	/**
+	 * 管理端 检查角色
+	 * @param user
+	 * @return
+	 */
+	@Override
+	public ServerResponse checkRole(User user) {
+		if(user != null && user.getRole().intValue() == Constant.Role.ROLE_ADMIN) {
+			return ServerResponse.serverSuccuss();
+		}
+		return ServerResponse.serverError();
+	}
+
 
 }

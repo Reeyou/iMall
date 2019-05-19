@@ -2,7 +2,7 @@ package com.reeyou.imall.dao;
 
 import com.reeyou.imall.pojo.PayInfo;
 
-public interface PayInfoMapper {
+public interface PayInfoDao {
     int deleteByPrimaryKey(Integer id);
 
     int insert(PayInfo record);

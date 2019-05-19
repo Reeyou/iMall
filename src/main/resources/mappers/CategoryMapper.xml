@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.reeyou.imall.dao.CategoryMapper" >
+<mapper namespace="com.reeyou.imall.dao.CategoryDao" >
   <resultMap id="BaseResultMap" type="com.reeyou.imall.pojo.Category" >
     <constructor >
       <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
@@ -15,25 +15,7 @@
   <sql id="Base_Column_List" >
     id, parent_id, name, status, sort_order, create_time, update_time
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
-    <include refid="Base_Column_List" />
-    from mmall_category
-    where id = #{id,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from mmall_category
-    where id = #{id,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.reeyou.imall.pojo.Category" >
-    insert into mmall_category (id, parent_id, name, 
-      status, sort_order, create_time, 
-      update_time)
-    values (#{id,jdbcType=INTEGER}, #{parentId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
-      #{status,jdbcType=BIT}, #{sortOrder,jdbcType=INTEGER}, now(),
-      now())
-  </insert>
-  <insert id="insertSelective" parameterType="com.reeyou.imall.pojo.Category" >
+  <insert id="insertSelective">
     insert into mmall_category
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -82,7 +64,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.reeyou.imall.pojo.Category" >
+  <update id="updateByPrimaryKeySelective">
     update mmall_category
     <set >
       <if test="parentId != null" >
@@ -106,14 +88,10 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.reeyou.imall.pojo.Category" >
-    update mmall_category
-    set parent_id = #{parentId,jdbcType=INTEGER},
-      name = #{name,jdbcType=VARCHAR},
-      status = #{status,jdbcType=BIT},
-      sort_order = #{sortOrder,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = now()
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from mmall_category
     where id = #{id,jdbcType=INTEGER}
-  </update>
+  </select>
 </mapper>

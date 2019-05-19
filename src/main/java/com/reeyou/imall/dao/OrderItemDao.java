@@ -2,7 +2,7 @@ package com.reeyou.imall.dao;
 
 import com.reeyou.imall.pojo.OrderItem;
 
-public interface OrderItemMapper {
+public interface OrderItemDao {
     int deleteByPrimaryKey(Integer id);
 
     int insert(OrderItem record);
