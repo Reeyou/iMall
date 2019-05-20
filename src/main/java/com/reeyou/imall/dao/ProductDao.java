@@ -2,6 +2,10 @@ package com.reeyou.imall.dao;
 
 import com.reeyou.imall.pojo.Product;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 @Mapper
 public interface ProductDao {
@@ -16,4 +20,11 @@ public interface ProductDao {
     int updateByPrimaryKeySelective(Product record);
 
     int updateByPrimaryKey(Product record);
+
+    @Select("select * from mmall_product ORDER BY id asc")
+    List<Product> selectProductList();
+
+	List<Product> selectByNameAndProductId(@Param("productName")String productName, @Param("productId") Integer productId);
+
+	List<Product> selectByNameAndCategoryIds(@Param("productName")String productName,@Param("categoryIdList")List<Integer> categoryIdList);
 }

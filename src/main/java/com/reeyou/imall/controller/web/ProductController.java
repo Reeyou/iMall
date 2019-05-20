@@ -1,6 +1,8 @@
 package com.reeyou.imall.controller.web;
 
 import com.reeyou.imall.common.ServerResponse;
+import com.reeyou.imall.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -10,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/product/")
 public class ProductController {
+
+	@Autowired
+	private ProductService productService;
 
 	/**
 	 * web获取商品列表
@@ -38,7 +43,8 @@ public class ProductController {
 	@GetMapping("/getProductDetail")
 	@ResponseBody
 	public ServerResponse getProductDetail(Integer categoryId) {
-		return null;
+
+		return productService.getProductDetail(categoryId);
 	}
 
 
