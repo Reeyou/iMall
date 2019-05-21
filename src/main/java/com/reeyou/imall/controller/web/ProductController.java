@@ -2,6 +2,10 @@ package com.reeyou.imall.controller.web;
 
 import com.reeyou.imall.common.ServerResponse;
 import com.reeyou.imall.service.ProductService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/admin/product/")
+@Api(value = "webProduct", tags = {"web商品管理"})
 public class ProductController {
 
 	@Autowired
@@ -25,8 +30,16 @@ public class ProductController {
 	 * @param keyWord
 	 * @return
 	 */
-	@GetMapping("/getProduct")
+	@GetMapping("/getProductList")
 	@ResponseBody
+	@ApiOperation(value = "获取商品列表")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "categoryId",value = "商品id",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "pageNum",value = "页数",paramType = "query",dataType = "int",required = true),
+			@ApiImplicitParam(name = "pageSize",value = "每页条数",paramType = "query",dataType = "int",required = true),
+			@ApiImplicitParam(name = "keyWord",value = "商品关键词",paramType = "query",dataType = "String",required = false),
+			@ApiImplicitParam(name = "orderBy",value = "排序",paramType = "query",dataType = "String",required = false)
+	})
 	public ServerResponse getProductList(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
 										 @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
 										 @RequestParam(value = "orderBy", defaultValue = "") String orderBy,
@@ -42,6 +55,8 @@ public class ProductController {
 	 */
 	@GetMapping("/getProductDetail")
 	@ResponseBody
+	@ApiOperation(value = "获取商品详情")
+	@ApiImplicitParam(name = "categoryId",value = "商品id",paramType = "query",dataType = "Integer",required = true)
 	public ServerResponse getProductDetail(Integer categoryId) {
 
 		return productService.getProductDetail(categoryId);

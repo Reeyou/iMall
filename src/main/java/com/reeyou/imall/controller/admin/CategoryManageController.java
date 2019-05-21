@@ -5,6 +5,10 @@ import com.reeyou.imall.common.ServerResponse;
 import com.reeyou.imall.pojo.User;
 import com.reeyou.imall.service.CategoryService;
 import com.reeyou.imall.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +20,7 @@ import javax.servlet.http.HttpSession;
  */
 @RestController
 @RequestMapping("/admin/")
+@Api(value = "adminCategory", tags = {"admin品类管理"})
 public class CategoryManageController {
 
 	@Autowired
@@ -33,6 +38,11 @@ public class CategoryManageController {
 	 */
 	@GetMapping(value = "/addCategory")
 	@ResponseBody
+	@ApiOperation(value = "添加品类信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "categoryName",value = "品类名称",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "parentId",value = "品类id",paramType = "query",dataType = "int",required = true),
+	})
 	public ServerResponse<String> addCategory(HttpSession session, String categoryName, @RequestParam(value = "parentId", defaultValue = "0") Integer parentId) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(user == null) {
@@ -55,6 +65,11 @@ public class CategoryManageController {
 	 */
 	@GetMapping(value = "/updateCategory")
 	@ResponseBody
+	@ApiOperation(value = "更新品类名称")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "categoryName",value = "品类名称",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "categoryId",value = "品类id",paramType = "query",dataType = "int",required = true),
+	})
 	public ServerResponse<String> updateCategory(HttpSession session, String categoryName, Integer categoryId) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(user == null) {
@@ -77,6 +92,8 @@ public class CategoryManageController {
 	 */
 	@GetMapping(value = "/getCategoryList")
 	@ResponseBody
+	@ApiOperation(value = "获取总品类列表")
+	@ApiImplicitParam(name = "categoryId",value = "商品id",paramType = "query",dataType = "int",required = true)
 	public ServerResponse getCategoryList(HttpSession session, @RequestParam(value = "categoryId", defaultValue = "0") Integer categoryId) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(user == null) {
@@ -96,8 +113,10 @@ public class CategoryManageController {
 	 * @param categoryId
 	 * @return
 	 */
+	@ApiOperation(value = "获取总品类子品类列表")
 	@GetMapping(value = "/getCategoryChildrenList")
 	@ResponseBody
+	@ApiImplicitParam(name = "categoryId",value = "商品id",paramType = "query",dataType = "int",required = true)
 	public ServerResponse getCategoryChildrenList(HttpSession session, @RequestParam(value = "categoryId", defaultValue = "0") Integer categoryId) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(user == null) {

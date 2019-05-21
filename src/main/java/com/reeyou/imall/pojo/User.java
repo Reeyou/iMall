@@ -1,7 +1,11 @@
 package com.reeyou.imall.pojo;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 
+@ApiModel(value = "用户实体类")
 public class User {
     private Integer id;
 

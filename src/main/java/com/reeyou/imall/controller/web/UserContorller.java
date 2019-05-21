@@ -5,6 +5,10 @@ import com.reeyou.imall.common.ResponseEnums;
 import com.reeyou.imall.common.ServerResponse;
 import com.reeyou.imall.pojo.User;
 import com.reeyou.imall.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +21,7 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/user/")
+@Api(value = "webProduct", tags = {"web用户管理"})
 public class UserContorller {
 
 	@Autowired
@@ -29,8 +34,13 @@ public class UserContorller {
 	 * @param session
 	 * @return
 	 */
+	@ApiOperation(value = "用户登录")
 	@PostMapping(value = "/login")
 	@ResponseBody
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "username",value = "用户名",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "password",value = "用户密码",paramType = "query",dataType = "String",required = true)
+	})
 	public ServerResponse<User> login(String username, String password, HttpSession session) {
 
 		//	service => mybatis => dao
@@ -43,6 +53,7 @@ public class UserContorller {
 		return response;
 	}
 
+	@ApiOperation(value = "用户注销")
 	@GetMapping(value = "/loginOut")
 	@ResponseBody
 	public ServerResponse<String> loginOut(HttpSession session) {
@@ -50,25 +61,44 @@ public class UserContorller {
 		return ServerResponse.serverSuccuss();
 	}
 
+	@ApiOperation(value = "用户注册")
 	@PostMapping(value = "/register")
 	@ResponseBody
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "username",value = "用户名",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "password",value = "用户密码",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "email",value = "用户邮箱",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "phone",value = "用户手机号",paramType = "query",dataType = "String",required = true)
+	})
 	public ServerResponse<String> register(User user) {
 		return UserService.register(user);
 	}
 
 
+	@ApiOperation(value = "忘记密码")
 	@GetMapping(value = "/forgetPwd")
 	@ResponseBody
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "username",value = "用户名",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "password",value = "用户密码",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "email",value = "用户邮箱",paramType = "query",dataType = "String",required = true)
+	})
 	public ServerResponse<String> forgetPwd(String username, String email, String newPassword) {
 		return UserService.forgetResetPwd(username, email, newPassword);
 	}
 
+	@ApiOperation(value = "登录状态 重置密码")
 	@GetMapping(value = "/resetPwd")
 	@ResponseBody
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "password",value = "用户原密码",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "newPassword",value = "用户新密码",paramType = "query",dataType = "String",required = true)
+	})
 	public ServerResponse<String> resetPwd(String password, String newPassword, HttpSession session) {
 		return UserService.resetPwd(password, newPassword, session);
 	}
 
+	@ApiOperation(value = "获取用户信息")
 	@GetMapping(value = "/getUserInfo")
 	@ResponseBody
 	public ServerResponse<User> getUserInfo(HttpSession session) {
@@ -79,8 +109,15 @@ public class UserContorller {
 		return UserService.getUserInfo(user.getId());
 	}
 
+	@ApiOperation(value = "更新用户信息")
 	@PostMapping(value = "/updateUserInfo")
 	@ResponseBody
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "username",value = "用户名",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "password",value = "用户密码",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "email",value = "用户邮箱",paramType = "query",dataType = "String",required = true),
+			@ApiImplicitParam(name = "phone",value = "用户手机号",paramType = "query",dataType = "String",required = true)
+	})
 	public ServerResponse<User> updateUserInfo(HttpSession session, User user) {
 		User currentUser = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(currentUser == null) {

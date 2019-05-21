@@ -3,16 +3,14 @@ package com.reeyou.imall.controller.admin;
 import com.reeyou.imall.common.Constant;
 import com.reeyou.imall.common.ResponseEnums;
 import com.reeyou.imall.common.ServerResponse;
-import com.reeyou.imall.dao.CategoryDao;
-import com.reeyou.imall.dao.ProductDao;
-import com.reeyou.imall.pojo.Category;
 import com.reeyou.imall.pojo.Product;
 import com.reeyou.imall.pojo.User;
 import com.reeyou.imall.service.ProductService;
 import com.reeyou.imall.service.UserService;
-import com.reeyou.imall.utils.PropertiesUtil;
-import com.reeyou.imall.vo.ProductDetailVo;
-import com.reeyou.imall.vo.ProductListVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +25,7 @@ import javax.servlet.http.HttpSession;
  */
 @RestController
 @RequestMapping("/admin/")
+@Api(value = "adminProduct", tags = {"admin商品管理"})
 public class ProductManageController {
 
 	@Autowired
@@ -45,6 +44,7 @@ public class ProductManageController {
 	 */
 	@PostMapping("/addOrUpdateProduct")
 	@ResponseBody
+	@ApiOperation(value = "添加或更新商品信息")
 	public ServerResponse addOrUpdateProduct(HttpSession session, Product product) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(userService.checkRole(user).isSuccuss()) {
@@ -63,6 +63,11 @@ public class ProductManageController {
 	 */
 	@PostMapping("/updateProductStatus")
 	@ResponseBody
+	@ApiOperation(value = "修改商品上下架状态")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "productId",value = "商品id",paramType = "query",dataType = "int",required = true),
+			@ApiImplicitParam(name = "status",value = "状态",paramType = "query",dataType = "int",required = true)
+	})
 	public ServerResponse setProductStatus(HttpSession session, Integer productId, Integer status) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 //		if(user == null) {
@@ -84,6 +89,11 @@ public class ProductManageController {
 	 */
 	@PostMapping("/getProductList")
 	@ResponseBody
+	@ApiOperation(value = "获取商品列表")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "pageNum",value = "页数",paramType = "query",dataType = "int",required = true),
+			@ApiImplicitParam(name = "pageSize",value = "每页条数",paramType = "query",dataType = "int",required = true)
+	})
 	public ServerResponse getProductList(HttpSession session,
 										 @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
 										 @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
@@ -106,6 +116,8 @@ public class ProductManageController {
 	 */
 	@PostMapping("/getProductDetail")
 	@ResponseBody
+	@ApiOperation(value = "获取商品详情")
+	@ApiImplicitParam(name = "productId",value = "商品id",paramType = "query",dataType = "int",required = true)
 	public ServerResponse getProductDetail(HttpSession session, Integer productId) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(user == null) {
@@ -132,9 +144,12 @@ public class ProductManageController {
 	 */
 	@PostMapping("/searchProduct")
 	@ResponseBody
-	public ServerResponse searchProduct(HttpSession session, String productName, Integer productId,
-										 @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-										 @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+	@ApiOperation(value = "搜索商品")
+	public ServerResponse searchProduct(HttpSession session,
+										String productName,
+										Integer productId,
+										@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+										@RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
 		return null;
 	}
 
@@ -155,7 +170,7 @@ public class ProductManageController {
 	}
 
 	/**
-	 * 上传文本文件
+	 * 上传富文本中图片
 	 * @param session
 	 * @param file
 	 * @param request
