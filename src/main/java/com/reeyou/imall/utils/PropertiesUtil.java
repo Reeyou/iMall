@@ -40,7 +40,7 @@ public class PropertiesUtil {
 	public static String getProperty(String key, String defaultValue) {
 		String value = properties.getProperty(key.trim());
 		if(StringUtils.isBlank(value)) {
-			return defaultValue;
+			value = defaultValue;
 		}
 		return value.trim();
 	}

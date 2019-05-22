@@ -36,7 +36,7 @@ public class CategoryManageController {
 	 * @param parentId
 	 * @return
 	 */
-	@GetMapping(value = "/addCategory")
+	@PostMapping(value = "/addCategory")
 	@ResponseBody
 	@ApiOperation(value = "添加品类信息")
 	@ApiImplicitParams({
@@ -63,7 +63,7 @@ public class CategoryManageController {
 	 * @param categoryId
 	 * @return
 	 */
-	@GetMapping(value = "/updateCategory")
+	@PostMapping(value = "/updateCategory")
 	@ResponseBody
 	@ApiOperation(value = "更新品类名称")
 	@ApiImplicitParams({
@@ -114,10 +114,10 @@ public class CategoryManageController {
 	 * @return
 	 */
 	@ApiOperation(value = "获取总品类子品类列表")
-	@GetMapping(value = "/getCategoryChildrenList")
+	@PostMapping(value = "/getCategoryChildrenList")
 	@ResponseBody
 	@ApiImplicitParam(name = "categoryId",value = "商品id",paramType = "query",dataType = "int",required = true)
-	public ServerResponse getCategoryChildrenList(HttpSession session, @RequestParam(value = "categoryId", defaultValue = "0") Integer categoryId) {
+	public ServerResponse getCategoryChildrenList(HttpSession session, Integer categoryId) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(user == null) {
 			return ServerResponse.serverErrorMsg("当前用户未登录");

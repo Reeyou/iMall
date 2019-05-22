@@ -4,12 +4,14 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
+import com.reeyou.imall.common.Constant;
 import com.reeyou.imall.common.ResponseEnums;
 import com.reeyou.imall.common.ServerResponse;
 import com.reeyou.imall.dao.CategoryDao;
 import com.reeyou.imall.dao.ProductDao;
 import com.reeyou.imall.pojo.Category;
 import com.reeyou.imall.pojo.Product;
+import com.reeyou.imall.service.CategoryService;
 import com.reeyou.imall.service.ProductService;
 import com.reeyou.imall.utils.DateTimeUtil;
 import com.reeyou.imall.utils.PropertiesUtil;
@@ -34,6 +36,9 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired
 	private CategoryDao categoryDao;
+
+	@Autowired
+	private CategoryService categoryService;
 
 
 	/**
@@ -120,7 +125,7 @@ public class ProductServiceImpl implements ProductService {
 		productListVo.setId(product.getId());
 		productListVo.setName(product.getName());
 		productListVo.setCategoryId(product.getCategoryId());
-		productListVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix","http://img.happymmall.com/"));
+//		productListVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix","http://img.happymmall.com/"));
 		productListVo.setMainImage(product.getMainImage());
 		productListVo.setPrice(product.getPrice());
 		productListVo.setSubtitle(product.getSubtitle());
@@ -186,5 +191,59 @@ public class ProductServiceImpl implements ProductService {
 	public ServerResponse searchProduct(String productName, Integer productId, int pageNum, int pageSzie) {
 		return null;
 	}
+
+	/**
+	 * web商品列表及动态排序
+	 * @param keyword
+	 * @param categoryId
+	 * @param pageNum
+	 * @param pageSize
+	 * @param orderBy
+	 * @return
+	 */
+//	public ServerResponse<PageInfo> getProductByKeywordCategory(String keyword,Integer categoryId,int pageNum,int pageSize,String orderBy){
+//		if(StringUtils.isBlank(keyword) && categoryId == null) {
+//			return ServerResponse.serverErrorCodeMsg(ResponseEnums.ERROR_AUGUMENTS.getCode(),ResponseEnums.ERROR_AUGUMENTS.getDesc());
+//		}
+//		List<String> categoryIdList = new ArrayList<String>();
+//
+//		if(categoryId != null) {
+//			Category category = categoryDao.selectByPrimaryKey(categoryId);
+//			if (category == null) {
+//				//不存在该分类并且无关键词
+//				PageHelper.startPage(pageNum, pageSize);
+//				List<ProductListVo> productListVoList = Lists.newArrayList();
+//				PageInfo pageInfo = new PageInfo(productListVoList);
+//				return ServerResponse.serverSuccuss(pageInfo);
+//			}
+//			categoryIdList = categoryService.findCategoryChildrenList(category.getId()).getData();
+//		}
+//
+//		if(StringUtils.isNotBlank(keyword)) {
+//			keyword = new StringBuilder().append("%").append(keyword).append("%").toString();
+//		}
+//
+//		//商品排序
+//		PageHelper.startPage(pageNum,pageSize);
+//		if(StringUtils.isNotBlank(orderBy)){
+//			if(Constant.ProductListOrderBy.PRICE_ASC_DESC.contains(orderBy)){
+//				String[] orderByArray = orderBy.split("_");
+//				PageHelper.orderBy(orderByArray[0]+" "+orderByArray[1]);
+//			}
+//		}
+//		List<Product> productList = productDao.selectByNameAndCategoryIds(StringUtils.isBlank(keyword)?null:keyword,StringUtils.isBlank(categoryIdList)?null:categoryIdList);
+//
+//		List<ProductListVo> productListVoList = Lists.newArrayList();
+//		for(Product product : productList){
+//			ProductListVo productListVo = addProductListVo(product);
+//			productListVoList.add(productListVo);
+//		}
+//
+//		PageInfo pageInfo = new PageInfo(productList);
+//		pageInfo.setList(productListVoList);
+//		return ServerResponse.serverSuccuss(pageInfo);
+//
+//
+//	}
 
 }

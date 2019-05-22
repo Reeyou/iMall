@@ -21,10 +21,9 @@ public interface ProductDao {
 
     int updateByPrimaryKey(Product record);
 
-    @Select("select * from mmall_product ORDER BY id asc")
     List<Product> selectProductList();
 
 	List<Product> selectByNameAndProductId(@Param("productName")String productName, @Param("productId") Integer productId);
 
-	List<Product> selectByNameAndCategoryIds(@Param("productName")String productName,@Param("categoryIdList")List<Integer> categoryIdList);
+//	List<Product> selectByNameAndCategoryIds(@Param("productName")String productName,@Param("categoryIdList")List<String> categoryIdList);
 }

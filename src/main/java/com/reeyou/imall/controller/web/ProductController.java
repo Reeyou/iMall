@@ -30,23 +30,23 @@ public class ProductController {
 	 * @param keyWord
 	 * @return
 	 */
-	@GetMapping("/getProductList")
-	@ResponseBody
-	@ApiOperation(value = "获取商品列表")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "categoryId",value = "商品id",paramType = "query",dataType = "String",required = true),
-			@ApiImplicitParam(name = "pageNum",value = "页数",paramType = "query",dataType = "int",required = true),
-			@ApiImplicitParam(name = "pageSize",value = "每页条数",paramType = "query",dataType = "int",required = true),
-			@ApiImplicitParam(name = "keyWord",value = "商品关键词",paramType = "query",dataType = "String",required = false),
-			@ApiImplicitParam(name = "orderBy",value = "排序",paramType = "query",dataType = "String",required = false)
-	})
-	public ServerResponse getProductList(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-										 @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-										 @RequestParam(value = "orderBy", defaultValue = "") String orderBy,
-										 @RequestParam(value = "categoryId", required = false) Integer categoryId,
-										 @RequestParam(value = "keyWord", required = false) String keyWord) {
-		return null;
-	}
+//	@GetMapping("/getProductList")
+//	@ResponseBody
+//	@ApiOperation(value = "获取商品列表")
+//	@ApiImplicitParams({
+//			@ApiImplicitParam(name = "categoryId",value = "商品id",paramType = "query",dataType = "String",required = true),
+//			@ApiImplicitParam(name = "pageNum",value = "页数",paramType = "query",dataType = "int",required = true),
+//			@ApiImplicitParam(name = "pageSize",value = "每页条数",paramType = "query",dataType = "int",required = true),
+//			@ApiImplicitParam(name = "keyWord",value = "商品关键词",paramType = "query",dataType = "String",required = false),
+//			@ApiImplicitParam(name = "orderBy",value = "排序",paramType = "query",dataType = "String",required = false)
+//	})
+//	public ServerResponse getProductList(@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+//										 @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+//										 @RequestParam(value = "orderBy", defaultValue = "") String orderBy,
+//										 @RequestParam(value = "categoryId", required = false) Integer categoryId,
+//										 @RequestParam(value = "keyWord", required = false) String keyword) {
+//		return productService.getProductByKeywordCategory(keyword,categoryId,pageNum,pageSize,orderBy);
+//	}
 
 	/**
 	 * web获取该商品详情

@@ -1,5 +1,6 @@
 package com.reeyou.imall.service;
 
+import com.github.pagehelper.PageInfo;
 import com.reeyou.imall.common.ServerResponse;
 import com.reeyou.imall.pojo.Product;
 
@@ -18,4 +19,6 @@ public interface ProductService {
 	ServerResponse getProductDetail(Integer productId);
 
 	ServerResponse searchProduct(String productName, Integer productId, int pageNum, int pageSzie);
+
+//	ServerResponse<PageInfo> getProductByKeywordCategory(String keyword, Integer categoryId, int pageNum, int pageSize, String orderBy);
 }

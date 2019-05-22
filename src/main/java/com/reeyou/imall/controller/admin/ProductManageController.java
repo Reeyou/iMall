@@ -1,16 +1,20 @@
 package com.reeyou.imall.controller.admin;
 
+import com.google.common.collect.Maps;
 import com.reeyou.imall.common.Constant;
 import com.reeyou.imall.common.ResponseEnums;
 import com.reeyou.imall.common.ServerResponse;
 import com.reeyou.imall.pojo.Product;
 import com.reeyou.imall.pojo.User;
+import com.reeyou.imall.service.FileService;
 import com.reeyou.imall.service.ProductService;
 import com.reeyou.imall.service.UserService;
+import com.reeyou.imall.utils.PropertiesUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 /**
  * @author Reeyou
@@ -34,7 +39,8 @@ public class ProductManageController {
 	@Autowired
 	private ProductService productService;
 
-
+	@Autowired
+	private FileService fileService;
 
 	/**
 	 * 添加、更新商品
@@ -95,13 +101,15 @@ public class ProductManageController {
 			@ApiImplicitParam(name = "pageSize",value = "每页条数",paramType = "query",dataType = "int",required = true)
 	})
 	public ServerResponse getProductList(HttpSession session,
-										 @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-										 @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+										 @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+										 @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(user == null) {
 			return ServerResponse.serverErrorCodeMsg(ResponseEnums.UNLOGIN.getCode(),"用户未登录");
 		}
 		if(userService.checkRole(user).isSuccuss()) {
+//			return ServerResponse.serverSuccussMsg("test");
 			return productService.getProductList(pageNum, pageSize);
 		} else {
 			return ServerResponse.serverErrorMsg("无权限操作");
@@ -165,7 +173,22 @@ public class ProductManageController {
 									@RequestParam(value="upload_file", required = false) MultipartFile file,
 									HttpServletRequest request,
 									HttpServletResponse response) {
-		return null;
+		User user = (User)session.getAttribute(Constant.CURRENT_USER);
+		if(user == null){
+			return ServerResponse.serverErrorCodeMsg(ResponseEnums.UNLOGIN.getCode(),"用户未登录,请登录管理员");
+		}
+		if(userService.checkRole(user).isSuccuss()){
+			String path = request.getSession().getServletContext().getRealPath("upload");
+			String targetFileName = fileService.upload(file,path);
+			String url = PropertiesUtil.getProperty("ftp.server.http.prefix")+targetFileName;
+
+			Map fileMap = Maps.newHashMap();
+			fileMap.put("uri",targetFileName);
+			fileMap.put("url",url);
+			return ServerResponse.serverSuccuss(fileMap);
+		}else{
+			return ServerResponse.serverErrorMsg("无权限操作");
+		}
 
 	}
 
@@ -177,11 +200,43 @@ public class ProductManageController {
 	 * @param response
 	 * @return
 	 */
-	public ServerResponse uploadTextFile(HttpSession session,
+	public Map uploadTextFile(HttpSession session,
 									@RequestParam(value="upload_file", required = false) MultipartFile file,
 									HttpServletRequest request,
 									HttpServletResponse response) {
-		return null;
+		Map resultMap = Maps.newHashMap();
+		User user = (User)session.getAttribute(Constant.CURRENT_USER);
+
+		//富文本中对于返回值有自己的要求,我们使用是simditor所以按照simditor的要求进行返回
+		// {
+		//  "success": true/false,
+		//  "msg": "error message", # optional
+		//  "file_path": "[real file path]"
+		//  }
+		if(user == null){
+			resultMap.put("success",false);
+			resultMap.put("msg","请登录管理员");
+			return resultMap;
+		}
+		if(userService.checkRole(user).isSuccuss()){
+			String path = request.getSession().getServletContext().getRealPath("upload");
+			String targetFileName = fileService.upload(file,path);
+			if(StringUtils.isBlank(targetFileName)){
+				resultMap.put("success",false);
+				resultMap.put("msg","上传失败");
+				return resultMap;
+			}
+			String url = PropertiesUtil.getProperty("ftp.server.http.prefix")+targetFileName;
+			resultMap.put("success",true);
+			resultMap.put("msg","上传成功");
+			resultMap.put("file_path",url);
+			response.addHeader("Access-Control-Allow-Headers","X-File-Name");
+			return resultMap;
+		}else{
+			resultMap.put("success",false);
+			resultMap.put("msg","无权限操作");
+			return resultMap;
+		}
 
 	}
 

@@ -91,14 +91,14 @@ public class CategoryServiceImpl implements CategoryService {
 	 * @return
 	 */
 	@Override
-	public ServerResponse<List<Integer>> findCategoryChildrenList(Integer categoryId) {
+	public ServerResponse<List<String>> findCategoryChildrenList(Integer categoryId) {
 		Set<Category> categorySet = Sets.newHashSet();
 		findCategoryChildren(categorySet, categoryId);
 
-		List<Integer> categoryList = Lists.newArrayList();
+		List<String> categoryList = Lists.newArrayList();
 		if(categoryId != null) {
 			for(Category categoryItem : categorySet) {
-				categoryList.add(categoryItem.getId());
+				categoryList.add(categoryItem.getName());
 			}
 		}
 		return ServerResponse.serverSuccuss(categoryList);
