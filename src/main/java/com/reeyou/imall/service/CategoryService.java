@@ -17,6 +17,6 @@ public interface CategoryService {
 
 	ServerResponse<List<Category>> findCategoryList(Integer categoryId);
 
-	ServerResponse<List<String>> findCategoryChildrenList(Integer categoryId);
+	ServerResponse<List<Category>> findCategoryChildrenList(Integer categoryId);
 
 }

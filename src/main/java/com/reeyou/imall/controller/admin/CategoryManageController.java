@@ -1,6 +1,7 @@
 package com.reeyou.imall.controller.admin;
 
 import com.reeyou.imall.common.Constant;
+import com.reeyou.imall.common.ResponseEnums;
 import com.reeyou.imall.common.ServerResponse;
 import com.reeyou.imall.pojo.User;
 import com.reeyou.imall.service.CategoryService;
@@ -40,8 +41,8 @@ public class CategoryManageController {
 	@ResponseBody
 	@ApiOperation(value = "添加品类信息")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "categoryName",value = "品类名称",paramType = "query",dataType = "String",required = true),
-			@ApiImplicitParam(name = "parentId",value = "品类id",paramType = "query",dataType = "int",required = true),
+		@ApiImplicitParam(name = "categoryName",value = "品类名称",paramType = "query",dataType = "String",required = true),
+		@ApiImplicitParam(name = "parentId",value = "品类id",paramType = "query",dataType = "int",required = true),
 	})
 	public ServerResponse<String> addCategory(HttpSession session, String categoryName, @RequestParam(value = "parentId", defaultValue = "0") Integer parentId) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
@@ -67,8 +68,8 @@ public class CategoryManageController {
 	@ResponseBody
 	@ApiOperation(value = "更新品类名称")
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "categoryName",value = "品类名称",paramType = "query",dataType = "String",required = true),
-			@ApiImplicitParam(name = "categoryId",value = "品类id",paramType = "query",dataType = "int",required = true),
+		@ApiImplicitParam(name = "categoryName",value = "品类名称",paramType = "query",dataType = "String",required = true),
+		@ApiImplicitParam(name = "categoryId",value = "品类id",paramType = "query",dataType = "int",required = true),
 	})
 	public ServerResponse<String> updateCategory(HttpSession session, String categoryName, Integer categoryId) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
@@ -110,21 +111,24 @@ public class CategoryManageController {
 	/**
 	 * 获取品类子节点列表
 	 * @param session
-	 * @param categoryId
+	 * @param parentId
 	 * @return
 	 */
 	@ApiOperation(value = "获取总品类子品类列表")
 	@PostMapping(value = "/getCategoryChildrenList")
 	@ResponseBody
-	@ApiImplicitParam(name = "categoryId",value = "商品id",paramType = "query",dataType = "int",required = true)
-	public ServerResponse getCategoryChildrenList(HttpSession session, Integer categoryId) {
+	@ApiImplicitParam(name = "parentId",value = "商品根节点id",paramType = "query",dataType = "int",required = true)
+	public ServerResponse getCategoryChildrenList(HttpSession session, Integer parentId) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(user == null) {
 			return ServerResponse.serverErrorMsg("当前用户未登录");
 		}
+		if(parentId == null) {
+			return ServerResponse.serverErrorCodeMsg(ResponseEnums.ERROR_AUGUMENTS.getCode(),"参数错误");
+		}
 		//检查是否为管理员
 		if(userService.checkRole(user).isSuccuss()) {
-			return categoryService.findCategoryChildrenList(categoryId);
+			return categoryService.findCategoryChildrenList(parentId);
 		} else {
 			return ServerResponse.serverSuccussMsg("无操作权限");
 		}

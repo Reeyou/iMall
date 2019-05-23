@@ -87,18 +87,18 @@ public class CategoryServiceImpl implements CategoryService {
 
 	/**
 	 * 查找该品类下的子品类
-	 * @param categoryId
+	 * @param parentId
 	 * @return
 	 */
 	@Override
-	public ServerResponse<List<String>> findCategoryChildrenList(Integer categoryId) {
+	public ServerResponse<List<Category>> findCategoryChildrenList(Integer parentId) {
 		Set<Category> categorySet = Sets.newHashSet();
-		findCategoryChildren(categorySet, categoryId);
+		findCategoryChildren(categorySet, parentId);
 
-		List<String> categoryList = Lists.newArrayList();
-		if(categoryId != null) {
+		List<Category> categoryList = Lists.newArrayList();
+		if(parentId != null) {
 			for(Category categoryItem : categorySet) {
-				categoryList.add(categoryItem.getName());
+				categoryList.add(categoryItem);
 			}
 		}
 		return ServerResponse.serverSuccuss(categoryList);
@@ -106,13 +106,11 @@ public class CategoryServiceImpl implements CategoryService {
 
 	//递归算法查找子节点方法
 	public Set<Category> findCategoryChildren(Set<Category> categorySet, Integer parentId) {
-		Category category = categoryDao.selectByPrimaryKey(parentId);
-		if(category != null) {
-			categorySet.add(category);
-		}
 
 		List<Category> categoryList = categoryDao.selectCategoryChildrenByParentId(parentId);
 		for(Category categoryItem : categoryList) {
+			//循环出来的数据放入set集合
+			categorySet.add(categoryItem);
 			findCategoryChildren(categorySet, categoryItem.getId());
 		}
 		return categorySet;

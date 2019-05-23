@@ -22,6 +22,6 @@ public interface CategoryDao {
 	@Update("update mmall_category set parent_id = #{parentId}, name = #{name}, status = #{status,jdbcType=BIT},sort_order = #{sortOrder},create_time = #{createTime}, update_time = now() where id = #{id}")
     int updateByPrimaryKey(Category record);
 
-    @Select("select * from mmall_category where parent_id = #{parentId}")
+//    @Select("select * from mmall_category where parent_id = #{parentId}")
     List<Category> selectCategoryChildrenByParentId(Integer parentId);
 }
