@@ -95,14 +95,17 @@ public class CategoryManageController {
 	@ResponseBody
 	@ApiOperation(value = "获取总品类列表")
 	@ApiImplicitParam(name = "categoryId",value = "商品id",paramType = "query",dataType = "int",required = true)
-	public ServerResponse getCategoryList(HttpSession session, @RequestParam(value = "categoryId", defaultValue = "0") Integer categoryId) {
+	public ServerResponse getCategoryList(HttpSession session,
+										  @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+										  @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+										  @RequestParam(value = "categoryId", defaultValue = "0") Integer categoryId) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(user == null) {
 			return ServerResponse.serverErrorMsg("当前用户未登录");
 		}
 		//检查是否为管理员
 		if(userService.checkRole(user).isSuccuss()) {
-			return categoryService.findCategoryList(categoryId);
+			return categoryService.findCategoryList(pageNum, pageSize, categoryId);
 		} else {
 			return ServerResponse.serverSuccussMsg("无操作权限");
 		}
@@ -118,7 +121,9 @@ public class CategoryManageController {
 	@PostMapping(value = "/getCategoryChildrenList")
 	@ResponseBody
 	@ApiImplicitParam(name = "parentId",value = "商品根节点id",paramType = "query",dataType = "int",required = true)
-	public ServerResponse getCategoryChildrenList(HttpSession session, Integer parentId) {
+	public ServerResponse getCategoryChildrenList(HttpSession session, Integer parentId,
+												  @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+												  @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(user == null) {
 			return ServerResponse.serverErrorMsg("当前用户未登录");
@@ -128,7 +133,7 @@ public class CategoryManageController {
 		}
 		//检查是否为管理员
 		if(userService.checkRole(user).isSuccuss()) {
-			return categoryService.findCategoryChildrenList(parentId);
+			return categoryService.findCategoryChildrenList(pageNum, pageSize, parentId);
 		} else {
 			return ServerResponse.serverSuccussMsg("无操作权限");
 		}

@@ -1,5 +1,6 @@
 package com.reeyou.imall.service;
 
+import com.github.pagehelper.PageInfo;
 import com.reeyou.imall.common.ServerResponse;
 import com.reeyou.imall.pojo.Category;
 
@@ -15,8 +16,8 @@ public interface CategoryService {
 
 	ServerResponse updateCategory(String categoryName, Integer categoryId);
 
-	ServerResponse<List<Category>> findCategoryList(Integer categoryId);
+	ServerResponse<PageInfo> findCategoryList(int pageNum, int pageSize, Integer categoryId);
 
-	ServerResponse<List<Category>> findCategoryChildrenList(Integer categoryId);
+	ServerResponse<PageInfo> findCategoryChildrenList(int pageNum, int pageSize, Integer categoryId);
 
 }

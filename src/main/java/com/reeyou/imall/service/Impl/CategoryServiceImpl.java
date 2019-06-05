@@ -1,6 +1,8 @@
 package com.reeyou.imall.service.Impl;
 
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.reeyou.imall.common.ServerResponse;
@@ -77,12 +79,17 @@ public class CategoryServiceImpl implements CategoryService {
 	 * @return
 	 */
 	@Override
-	public ServerResponse<List<Category>> findCategoryList(Integer categoryId) {
+	public ServerResponse<PageInfo> findCategoryList(int pageNum, int pageSize, Integer categoryId) {
+		PageHelper.startPage(pageNum, pageSize);
+
 		List<Category> categoryList = categoryDao.selectCategoryChildrenByParentId(categoryId);
 		if(CollectionUtils.isEmpty(categoryList)) {
 			return ServerResponse.serverErrorMsg("未找到当前分类的子分类");
 		}
-		return ServerResponse.serverSuccuss(categoryList);
+
+		PageInfo pageResult = new PageInfo(categoryList);
+		pageResult.setList(categoryList);
+		return ServerResponse.serverSuccuss(pageResult);
 	}
 
 	/**
@@ -91,7 +98,9 @@ public class CategoryServiceImpl implements CategoryService {
 	 * @return
 	 */
 	@Override
-	public ServerResponse<List<Category>> findCategoryChildrenList(Integer parentId) {
+	public ServerResponse<PageInfo> findCategoryChildrenList(int pageNum, int pageSize, Integer parentId) {
+		PageHelper.startPage(pageNum, pageSize);
+
 		Set<Category> categorySet = Sets.newHashSet();
 		findCategoryChildren(categorySet, parentId);
 
@@ -101,7 +110,9 @@ public class CategoryServiceImpl implements CategoryService {
 				categoryList.add(categoryItem);
 			}
 		}
-		return ServerResponse.serverSuccuss(categoryList);
+		PageInfo pageResult = new PageInfo(categoryList);
+		pageResult.setList(categoryList);
+		return ServerResponse.serverSuccuss(pageResult);
 	}
 
 	//递归算法查找子节点方法
