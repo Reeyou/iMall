@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author Reeyou
@@ -16,6 +17,8 @@ public class ProductListVo {
 	private Integer categoryId;
 
 	private String name;
+	private String categoryName;
+	private Integer stock;
 	private String subtitle;
 	private String mainImage;
 	private BigDecimal price;
@@ -23,4 +26,6 @@ public class ProductListVo {
 	private Integer status;
 
 	private String imageHost;
+
+	private Date updateTime;
 }

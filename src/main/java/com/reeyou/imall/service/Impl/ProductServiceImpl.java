@@ -124,12 +124,15 @@ public class ProductServiceImpl implements ProductService {
 		ProductListVo productListVo = new ProductListVo();
 		productListVo.setId(product.getId());
 		productListVo.setName(product.getName());
+		productListVo.setCategoryName(product.getCategoryName());
 		productListVo.setCategoryId(product.getCategoryId());
+		productListVo.setStock(product.getStock());
 //		productListVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix","http://img.happymmall.com/"));
 		productListVo.setMainImage(product.getMainImage());
 		productListVo.setPrice(product.getPrice());
 		productListVo.setSubtitle(product.getSubtitle());
 		productListVo.setStatus(product.getStatus());
+		productListVo.setUpdateTime(product.getUpdateTime());
 		return productListVo;
 	}
 
