@@ -5,6 +5,7 @@ import com.reeyou.imall.service.FileService;
 import com.reeyou.imall.utils.FTPUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,17 +18,20 @@ import java.util.UUID;
  * @data 2019/5/20 10:31
  */
 @Service
+
 public class FileServiceImpl implements FileService {
 	private Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
 
 	public String upload(MultipartFile file,String path){
+		System.out.println(1);
+		System.out.println(file.getOriginalFilename());
 		String fileName = file.getOriginalFilename();
 		//扩展名
 		//abc.jpg
 		String fileExtensionName = fileName.substring(fileName.lastIndexOf(".")+1);
 		String uploadFileName = UUID.randomUUID().toString()+"."+fileExtensionName;
-		logger.info("开始上传文件,上传文件的文件名:{},上传的路径:{},新文件名:{}",fileName,path,uploadFileName);
+		logger.info("开始上传文件,上传文件的文件名:{},上传的路径:{},新文件名:{}",fileName,path,fileExtensionName);
 
 		File fileDir = new File(path);
 		if(!fileDir.exists()){
@@ -35,17 +39,15 @@ public class FileServiceImpl implements FileService {
 			fileDir.mkdirs();
 		}
 		File targetFile = new File(path,uploadFileName);
-
-
 		try {
 			file.transferTo(targetFile);
 			//文件已经上传成功了
 
 
-			FTPUtil.uploadFile(Lists.newArrayList(targetFile));
+//			FTPUtil.uploadFile(Lists.newArrayList(targetFile));
 			//已经上传到ftp服务器上
 
-			targetFile.delete();
+//			targetFile.delete();
 		} catch (IOException e) {
 			logger.error("上传文件异常",e);
 			return null;
@@ -53,5 +55,6 @@ public class FileServiceImpl implements FileService {
 		//A:abc.jpg
 		//B:abc.jpg
 		return targetFile.getName();
+
 	}
 }

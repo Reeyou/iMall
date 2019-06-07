@@ -166,25 +166,30 @@ public class ProductManageController {
 	 * @param session
 	 * @param file
 	 * @param request
-	 * @param response
 	 * @return
 	 */
+	@PostMapping("/uploadImg")
+	@ResponseBody
+	@ApiOperation(value = "上传图片")
 	public ServerResponse uploadImg(HttpSession session,
-									@RequestParam(value="upload_file", required = false) MultipartFile file,
-									HttpServletRequest request,
-									HttpServletResponse response) {
+									@RequestParam(value="file", required = false) MultipartFile file,
+									HttpServletRequest request) {
 		User user = (User)session.getAttribute(Constant.CURRENT_USER);
 		if(user == null){
 			return ServerResponse.serverErrorCodeMsg(ResponseEnums.UNLOGIN.getCode(),"用户未登录,请登录管理员");
 		}
 		if(userService.checkRole(user).isSuccuss()){
-			String path = request.getSession().getServletContext().getRealPath("upload");
-			String targetFileName = fileService.upload(file,path);
-			String url = PropertiesUtil.getProperty("ftp.server.http.prefix")+targetFileName;
+			System.out.println(file.getOriginalFilename());
+//			String path = request.getSession().getServletContext().getRealPath("upload");
+//			String path = PropertiesUtil.getProperty("imgPath");
+//			System.out.println(path);
+
+			String targetFileName = fileService.upload(file,"uploadImg");
+//			String url = PropertiesUtil.getProperty("imgPath")+targetFileName;
 
 			Map fileMap = Maps.newHashMap();
 			fileMap.put("uri",targetFileName);
-			fileMap.put("url",url);
+//			fileMap.put("url",url);
 			return ServerResponse.serverSuccuss(fileMap);
 		}else{
 			return ServerResponse.serverErrorMsg("无权限操作");

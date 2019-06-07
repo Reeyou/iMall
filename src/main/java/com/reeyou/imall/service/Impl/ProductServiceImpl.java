@@ -56,6 +56,9 @@ public class ProductServiceImpl implements ProductService {
 					product.setMainImage(subImageArray[0]);
 				}
 			}
+			if(product.getStatus() == null) {
+				product.setStatus(0);
+			}
 			//根据id执行新增或者更新操作
 			if(product.getId() == null) {
 				int resultCount = productDao.insert(product);
