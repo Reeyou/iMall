@@ -23,7 +23,7 @@ public class PropertiesUtil {
 		properties = new Properties();
 		try {
 			//字符流读取文件
-			properties.load(new InputStreamReader(PropertiesUtil.class.getResourceAsStream(fileName), "UTF-8"));
+			properties.load(new InputStreamReader(PropertiesUtil.class.getClassLoader().getResourceAsStream(fileName),"UTF-8"));
 		} catch (IOException e) {
 			logger.error("配置文件读取异常", e);
 		}

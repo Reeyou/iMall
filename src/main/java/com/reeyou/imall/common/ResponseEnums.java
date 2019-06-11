@@ -6,7 +6,7 @@ package com.reeyou.imall.common;
  */
 public enum ResponseEnums {
 
-	SUCCUSS(0, "SUCCUSS"),
+	SUCCUSS(200, "SUCCUSS"),
 	ERROR(1, "ERROR"),
 	UNLOGIN(10, "UNLOGIN"),
 	ERROR_AUGUMENTS(2, "ERROR_ARGUMENTS");

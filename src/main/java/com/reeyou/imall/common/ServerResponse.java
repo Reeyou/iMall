@@ -13,23 +13,23 @@ import java.io.Serializable;
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 public class ServerResponse<T> implements Serializable {
 
-	private int status;
+	private int code;
 	private String msg;
 	private T data;
 
-	private ServerResponse(int status) {
-		this.status = status;
+	private ServerResponse(int code) {
+		this.code = code;
 	}
-	private ServerResponse(int status, String msg) {
-		this.status = status;
+	private ServerResponse(int code, String msg) {
+		this.code = code;
 		this.msg = msg;
 	}
-	private ServerResponse(int status, T data) {
-		this.status = status;
+	private ServerResponse(int code, T data) {
+		this.code = code;
 		this.data = data;
 	}
-	private ServerResponse(int status, String msg, T data) {
-		this.status = status;
+	private ServerResponse(int code, String msg, T data) {
+		this.code = code;
 		this.msg = msg;
 		this.data = data;
 	}
@@ -37,11 +37,11 @@ public class ServerResponse<T> implements Serializable {
 	//使之不在序列化对象结果当中，因为is开头会被定义为常量
 	@JsonIgnore
 	public boolean isSuccuss() {
-		return this.status == ResponseEnums.SUCCUSS.getCode();
+		return this.code == ResponseEnums.SUCCUSS.getCode();
 	}
 
-	public int getStatus() {
-		return status;
+	public int getCode() {
+		return code;
 	}
 
 	public String getMsg() {

@@ -16,12 +16,14 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -32,6 +34,12 @@ import java.util.Map;
 @RequestMapping("/admin/")
 @Api(value = "adminProduct", tags = {"admin商品管理"})
 public class ProductManageController {
+
+	@Value("${web.upload-path}")
+	private String path;
+
+	@Value("${spring.base.gateway}")
+	private String gateway;
 
 	@Autowired
 	private UserService userService;
@@ -179,18 +187,42 @@ public class ProductManageController {
 			return ServerResponse.serverErrorCodeMsg(ResponseEnums.UNLOGIN.getCode(),"用户未登录,请登录管理员");
 		}
 		if(userService.checkRole(user).isSuccuss()){
-			System.out.println(file.getOriginalFilename());
-//			String path = request.getSession().getServletContext().getRealPath("upload");
-//			String path = PropertiesUtil.getProperty("imgPath");
-//			System.out.println(path);
+			try {
+				String data = "";
+				String temp = "images" + File.separator + "upload";
 
-			String targetFileName = fileService.upload(file,"uploadImg");
-//			String url = PropertiesUtil.getProperty("imgPath")+targetFileName;
+				// 获取图片的文件名
+				String fileName = file.getOriginalFilename();
 
-			Map fileMap = Maps.newHashMap();
-			fileMap.put("uri",targetFileName);
-//			fileMap.put("url",url);
-			return ServerResponse.serverSuccuss(fileMap);
+				// 获取图片的扩展名
+				String extensionName = StringUtils.substringAfter(fileName, ".");
+
+				// 新的图片文件名 = 获取时间戳+"."图片扩展名
+				String newFileName = String.valueOf(System.currentTimeMillis()) + "." + extensionName;
+
+				// 数据库保存的目录
+				String datdDirectory = temp.concat(File.separator);
+				// 文件路径
+				String filePath = path.concat(datdDirectory);
+
+				// 判断
+				File dest = new File(filePath, newFileName);
+				if (!dest.getParentFile().exists()) {
+					dest.getParentFile().mkdirs();
+				}
+
+				file.transferTo(dest);
+
+				data = datdDirectory.replaceAll("\\\\", "/") + newFileName;
+
+				String responseData = gateway + data;
+
+				System.out.println(responseData);
+
+				return ServerResponse.serverSuccuss("图片上传成功",responseData);
+			} catch (Exception e) {
+				return ServerResponse.serverErrorMsg(("图片上传失败"));
+			}
 		}else{
 			return ServerResponse.serverErrorMsg("无权限操作");
 		}
