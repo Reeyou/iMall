@@ -50,12 +50,12 @@ public class ProductServiceImpl implements ProductService {
 		//商品不为空值时
 		if(product != null) {
 			//判断商品图片-----设置商品信息主展示图
-			if(StringUtils.isNotBlank(product.getSubImages())) {
-				String[] subImageArray = product.getSubImages().split(",");
-				if(subImageArray.length > 0) {
-					product.setMainImage(subImageArray[0]);
-				}
-			}
+//			if(StringUtils.isNotBlank(product.getSubImages())) {
+//				String[] subImageArray = product.getSubImages().split(",");
+//				if(subImageArray.length > 0) {
+//					product.setMainImage(subImageArray[0]);
+//				}
+//			}
 			if(product.getStatus() == null) {
 				product.setStatus(0);
 			}
