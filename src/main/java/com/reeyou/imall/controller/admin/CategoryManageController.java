@@ -91,7 +91,7 @@ public class CategoryManageController {
 	 * @param categoryId
 	 * @return
 	 */
-	@GetMapping(value = "/getCategoryList")
+	@PostMapping(value = "/getCategoryList")
 	@ResponseBody
 	@ApiOperation(value = "获取总品类列表")
 	@ApiImplicitParam(name = "categoryId",value = "商品id",paramType = "query",dataType = "int",required = true)
@@ -106,6 +106,24 @@ public class CategoryManageController {
 		//检查是否为管理员
 		if(userService.checkRole(user).isSuccuss()) {
 			return categoryService.findCategoryList(pageNum, pageSize, categoryId);
+		} else {
+			return ServerResponse.serverSuccussMsg("无操作权限");
+		}
+	}
+
+	@PostMapping(value = "/getCategoryDetail")
+	@ResponseBody
+	@ApiOperation(value = "获取品类信息")
+	@ApiImplicitParam(name = "categoryId",value = "商品id",paramType = "query",dataType = "int",required = true)
+	public ServerResponse getCategoryList(HttpSession session,
+										  @RequestParam(value = "categoryId") Integer categoryId) {
+		User user = (User)session.getAttribute(Constant.CURRENT_USER);
+		if(user == null) {
+			return ServerResponse.serverErrorMsg("当前用户未登录");
+		}
+		//检查是否为管理员
+		if(userService.checkRole(user).isSuccuss()) {
+			return categoryService.findCategoryDetail(categoryId);
 		} else {
 			return ServerResponse.serverSuccussMsg("无操作权限");
 		}
@@ -138,5 +156,28 @@ public class CategoryManageController {
 			return ServerResponse.serverSuccussMsg("无操作权限");
 		}
 	}
+
+	@ApiOperation(value = "更改品类状态")
+	@PostMapping(value = "/updataCategoryStatus")
+	@ResponseBody
+	@ApiImplicitParam(name = "status",value = "品类状态",paramType = "query",dataType = "String",required = true)
+	public ServerResponse updateCategoryStatus(Integer categoryId, Boolean status) {
+		return categoryService.updateCategoryStatus(categoryId, status);
+	}
+
+
+	/**
+	 * 删除分类
+	 * @param categoryId
+	 * @return
+	 */
+	@ApiOperation(value = "删除品类")
+	@PostMapping(value = "/deleteCategory")
+	@ResponseBody
+	@ApiImplicitParam(name = "categoryId",value = "商品根节点id",paramType = "query",dataType = "int",required = true)
+	public ServerResponse deleteCategory(Integer categoryId) {
+		return categoryService.deleteCategory(categoryId);
+	}
+
 
 }

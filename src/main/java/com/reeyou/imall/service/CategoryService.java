@@ -20,4 +20,10 @@ public interface CategoryService {
 
 	ServerResponse<PageInfo> findCategoryChildrenList(int pageNum, int pageSize, Integer categoryId);
 
+	ServerResponse findCategoryDetail(Integer categoryId);
+
+	ServerResponse deleteCategory(Integer categoryId);
+
+	ServerResponse updateCategoryStatus(Integer categoryId, Boolean status);
+
 }
